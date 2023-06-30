@@ -13,6 +13,7 @@ start mongodb
 ```
 4. Change `mongodb_url` and `mongodb_database` in `database.cfg`.
 5. Run `npm install` in `resources/mongodb` directory.
+6. if using lua check `example.lua` and put `server_script '@mongodb/lib/Mongo.lua'` in your resource fxmanifest.
 
 ## Usage
 
@@ -20,14 +21,19 @@ Every callback accepts `success<boolean>` as its first argument. If `success` is
 
 Example (Lua):
 ```lua
-exports.mongodb:findOne({ collection = "users", query = { _id = id } }, function (success, result)
-    if not success then
-        print("Error message: "..tostring(result))
-        return
-    end
+Mongo.ready(function(databaseName)
 
-    print("User name is "..tostring(result[1].name))
-end)
+    print(("Database %s connected"):format(databaseName));
+
+    Mongo.findOne("users", { _id = id }, nil, function(success, result)
+
+        if (not success) then print("Error message: "..tostring(result)) return; end
+
+        print("User name is "..tostring(result[1].name))
+
+    end);
+
+end);
 ```
 
 ## exports.mongodb.isConnected
